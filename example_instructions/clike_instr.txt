@@ -1,0 +1,58 @@
+
+#note $$ seperates ARGS
+#replace #$$# #, # 
+#replace #\# ##
+
+#define set(NAME, BODY) float NAME = BODY;
+
+#define def(NAME, ARGS, BODY)
+
+float NAME(ARGS) {
+	return BODY;
+}
+
+#define app(NAME, ARGS) NAME(ARGS)
+
+#define wrap(WRAP) (WRAP)
+
+#define case(IF, THEN, ELSE) (IF ? THEN : ELSE)
+
+#define =(L, R) L == R
+#define \ge(L, R) L >= R
+#define \le(L, R) L <= R
+#define <(L, R) L < R
+#define >(L, R) L > R
+
+#define *(L, R) L * R
+#define +(L, R) L + R
+#define -(L, R) L - R
+#define /(L, R) (L) / (R)
+
+#define +.(V) +V
+#define -.(V) -V
+
+#define sqrt(L, R) pow(R, rcp(L))
+
+#include sum(IT, FROM, TO, BODY)
+
+float IT;
+float desmos_sum_IT(float from, float to) {
+	float c = 0;
+	for (IT = from; IT <= to; IT++)
+		c += BODY;
+	return c;
+}
+
+#define sum(IT, FROM, TO, BODY) desmos_sum_IT(FROM, TO)
+
+#include prod(IT, FROM, TO, BODY)
+
+float IT;
+float desmos_prod_IT(float from, float to) {
+	float c = 1;
+	for (IT = from; IT <= to; IT++)
+		c *= BODY;
+	return c;
+}
+
+#define prod(IT, FROM, TO, BODY) desmos_prod_IT(FROM, TO)

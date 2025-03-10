@@ -1,0 +1,43 @@
+#note $$ seperates ARGS
+#replace #$$# #, # 
+#replace #\# ##
+
+#define set(NAME, BODY) NAME = BODY
+
+#define def(NAME, ARGS, BODY)
+
+def NAME(ARGS):
+    return BODY
+
+#define app(NAME, ARGS) NAME(ARGS)
+
+#define wrap(WRAP) (WRAP)
+
+#define case(A, B, C) (B if A else C)
+
+#define =(L, R) L == R
+#define \ge(L, R) L >= R
+#define \le(L, R) L <= R
+#define <(L, R) L < R
+#define >(L, R) L > R
+
+#define *(L, R) L * R
+#define +(L, R) L + R
+#define -(L, R) L - R
+#define /(L, R) (L) / (R)
+
+#define +.(V) +V
+#define -.(V) -V
+
+#define sqrt(L, R) math.pow(R, L**-1)
+
+#define pow(L, R) math.pow(L, R)
+#define mod(L, R) (L) % (R)
+
+#define ln(V) math.log(V)
+#define exp(V) math.exp(V)
+#define sin(V) math.sin(V)
+
+#define sum(IT, FROM, TO, BODY) sum(BODY for IT in range(FROM, TO + 1))
+
+#define prod(IT, FROM, TO, BODY) math.exp(sum(math.log(BODY) for IT in range(FROM, TO + 1)))
