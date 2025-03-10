@@ -8,7 +8,7 @@
 #define def(NAME, ARGS, BODY)
 
 float NAME(ARGS) {
-	return BODY;
+    return BODY;
 }
 
 #define app(NAME, ARGS) NAME(ARGS)
@@ -37,10 +37,10 @@ float NAME(ARGS) {
 
 float IT;
 float desmos_sum_IT(float from, float to) {
-	float c = 0;
-	for (IT = from; IT <= to; IT++)
-		c += BODY;
-	return c;
+    float c = 0;
+    for (IT = from; IT <= to; IT++)
+        c += BODY;
+    return c;
 }
 
 #define sum(IT, FROM, TO, BODY) desmos_sum_IT(FROM, TO)
@@ -49,10 +49,10 @@ float desmos_sum_IT(float from, float to) {
 
 float IT;
 float desmos_prod_IT(float from, float to) {
-	float c = 1;
-	for (IT = from; IT <= to; IT++)
-		c *= BODY;
-	return c;
+    float c = 1;
+    for (IT = from; IT <= to; IT++)
+        c *= BODY;
+    return c;
 }
 
 #define prod(IT, FROM, TO, BODY) desmos_prod_IT(FROM, TO)

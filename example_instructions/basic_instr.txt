@@ -1,8 +1,9 @@
 
-#define +(L, R) L + R
+#define +(L, R) addL(R)
 #define *(L, R) L * R
 #define -(L, R) L - R
 #define /(L, R) (L) / (R)
 #define +.(V) +V
 #define -.(V) -V
 
+#include +(L, R) def addL(R): return L + R
