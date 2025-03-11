@@ -90,8 +90,23 @@ instr_set = {
     },
     'wrap' : {
         'bind_name': "wrap",
-        'args': ['WRAP'],
-        'macro': "(WRAP)"
+        'args': ['X'],
+        'macro': "(X)"
+    },
+    'p2x' : {
+        'bind_name': "point2",
+        'args': ['X', 'Y'],
+        'macro': "(X, Y)"
+    },
+    'p3x' : {
+        'bind_name': "point3",
+        'args': ['X', 'Y', 'Z'],
+        'macro': "(X, Y, Z)"
+    },
+    'axis' : {
+        'bind_name': "axis",
+        'args': ['AXIS', 'POINT'],
+        'macro': "POINT.AXIS"
     },
     'if' : {
         'bind_name': "case",
@@ -100,23 +115,23 @@ instr_set = {
     },
     'iter' : {
         'bind_name': 0,
-        'args': ['NAME', 'IT', 'FROM', 'TO', 'BODY'],
-        'macro': "NAME(BODY for IT=[FROM..TO])"
+        'args': ['FOLD', 'IT', 'FROM', 'TO', 'BODY'],
+        'macro': "FOLD(BODY for IT=[FROM..TO])"
     },
     'cop' : {
         'bind_name': 0,
-        'args': ['NAME', 'L', 'R'],
-        'macro': f"NAME(L{ADIV}R)"
+        'args': ['OP', 'L', 'R'],
+        'macro': f"OP(L{ADIV}R)"
     },
     'bop' : {
         'bind_name': 0,
-        'args': ['NAME', 'L', 'R'],
-        'macro': f"NAME(L{ADIV}R)"
+        'args': ['OP', 'L', 'R'],
+        'macro': f"OP(L{ADIV}R)"
     },
     'uop' : {
         'bind_name': 0,
-        'args': ['NAME', 'V'],
-        'macro': "NAME(V)"
+        'args': ['OP', 'V'],
+        'macro': "OP(V)"
     },
 }
 
