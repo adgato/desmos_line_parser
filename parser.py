@@ -106,12 +106,13 @@ uop_name2 = Literal("floor") | Literal("ceil") | Literal("round") | Literal("abs
 # begin expression parsing
 E = Forward()
 A = Forward()
+AX = Forward()
 B = Forward()
 
 # these can be passed to functions like \sin without parenthasis
 frac = Literal("\\frac") + brace(E) + brace(E)
 exp = Literal("e^") + brace(E)
-pow = A + Literal("^") + brace(E)
+pow = AX + Literal("^") + brace(E)
 val = ident | number | frac
 idx = exp | pow
 
@@ -146,17 +147,14 @@ named_bop2 = Literal("\\") + bop_name2 + paren2(E, E)
 sqrt = Literal("\\sqrt") + Literal("[") + E + Literal("]") + brace(E)
 binary = named_bop1 | named_bop2 | sqrt
 
-# unary 1
+# unary
 named_uop1 = Literal("\\") + uop_name1 + uarg
 log = Literal("\\log_") + brace(E) + uarg
 diff = Literal("\\frac{d}") + brace(Literal("d") + ident) + uarg
-unary1 = named_uop1 | log | diff
-
-# unary 2
 named_uop2 = Literal("\\operatorname") + brace(uop_name2) + paren(E)
 length = Literal("\\left|") + E + Literal("\\right|")
 sqrt2 = Literal("\\sqrt") + brace(E)
-unary2 = named_uop2 | length | sqrt2
+unary = named_uop1 | log | diff | named_uop2 | length | sqrt2
 
 # iterators
 sum = Literal("\\sum_") + brace(E + Literal("=") + E) + Literal("^") + brace(E) + B
@@ -188,18 +186,16 @@ exp.setParseAction(lambda t: uop("exp", t[2]))
 length.setParseAction(lambda t: uop("length", t[1]))
 
 # anything binding tighter than multiplication
-A << (binary | cond | unary2 | app | wrap | point | val)
+A << (unary | iterators | binary | cond | app | wrap | point | val)
 
 # weakly constrained operations
-atom2 = idx | axis | unary1 | iterators | A 
-
-# don't misinterpret a sign between terms as a unary operator
-sign = add_op + B
-sign.setParseAction(lambda t: uop(t[0] + ".", t[1]))
-atom1 = atom2 | sign
+AX << (axis | A)
+idxAX = idx | AX
+signA = add_op + A
+signA.setParseAction(lambda t: uop(t[0] + ".", t[1]))
 
 # anything binding tighter than addition
-B << (atom1 + Group(ZeroOrMore(mul_op + atom2)))
+B << ((idxAX | signA) + Group(ZeroOrMore(mul_op + idxAX)))
 B.setParseAction(mul_bops)
 
 # any expression
@@ -218,22 +214,22 @@ def parse_desmos(line: str) -> dict:
 
 if __name__ == "__main__":
     test_definitions = [
-        r"V\left(x\right)=\frac{2}{c}\left(1-\exp\left(-\frac{\operatorname{mod}\left(x,T_{1}\right)}{T_{2}}\right)\right)-1",
-        r"H\left(x\right)=\left\{\operatorname{mod}\left(\frac{x}{T_{1}},2\right)>1:-V\left(x\right),V\left(x\right)\right\}",
-        r"f\left(x\right)=\frac{1}{3\left(Q+1\right)^{\frac{Q}{1.3}}}e^{-\frac{1}{2}x^{2}}\left(10x+\sin^{2}\left(4\left(x-a\right)\right)\right)",
-        r"f_{n2}\left(q,n,t\right)=\operatorname{ceil}\left(\frac{n}{q+1}\right)^{q}g\left(q,\operatorname{ceil}\left(\frac{n}{q+1}\right),t-\frac{q}{2\operatorname{ceil}\left(\frac{n}{q+1}\right)}\right)",
-        r"F_{ib}\left(n\right)=\frac{\sqrt{5}}{5}\left(\phi^{n}-\frac{\cos\left(\pi n\right)}{\phi^{n}}\right)",
-        r"f_{2}\left(t\right)=\frac{\left(-a-\sqrt{a^{2}-1}\right)}{-2\sqrt{a^{2}-1}}e^{\left(-a+\sqrt{a^{2}-1}\right)t}+\frac{\left(-a+\sqrt{a^{2}-1}\right)}{2\sqrt{a^{2}-1}}e^{\left(-a-\sqrt{a^{2}-1}\right)t}\ ",
-        r"p\left(x\right)=0.5\operatorname{erf}\left(-3.7\left(x-0.65\right)\right)+0.5",
-        r"m_{x}\left(P\right)=\left\{\left|P.x\right|-s_{0}>\max\left(\left|P.y\right|-s_{1},\left|P.z\right|-s_{2}\right):0,\left|P.y\right|-s_{1}>\left|P.z\right|-s_{2}:1,2\right\}",
-        r"t_{1}=-\frac{\left(p-u\right)\times\left(v-u\right)\cdot\left(d\times\left(v-u\right)\right)}{\left|d\times\left(v-u\right)\right|^{2}}"
-        r"G_{2}\left(P,t\right)=\left(m_{g}\left(t-0,P.x,s_{0}\right),m_{g}\left(t-1,P.y,s_{1}\right),m_{g}\left(t-2,P.z,s_{2}\right)\right)",
+        #r"V\left(x\right)=\frac{2}{c}\left(1-\exp\left(-\frac{\operatorname{mod}\left(x,T_{1}\right)}{T_{2}}\right)\right)-1",
+        #r"H\left(x\right)=\left\{\operatorname{mod}\left(\frac{x}{T_{1}},2\right)>1:-V\left(x\right),V\left(x\right)\right\}",
+        #r"f\left(x\right)=\frac{1}{3\left(Q+1\right)^{\frac{Q}{1.3}}}e^{-\frac{1}{2}x^{2}}\left(10x+\sin^{2}\left(4\left(x-a\right)\right)\right)",
+        #r"f_{n2}\left(q,n,t\right)=\operatorname{ceil}\left(\frac{n}{q+1}\right)^{q}g\left(q,\operatorname{ceil}\left(\frac{n}{q+1}\right),t-\frac{q}{2\operatorname{ceil}\left(\frac{n}{q+1}\right)}\right)",
+        #r"F_{ib}\left(n\right)=\frac{\sqrt{5}}{5}\left(\phi^{n}-\frac{\cos\left(\pi n\right)}{\phi^{n}}\right)",
+        #r"f_{2}\left(t\right)=\frac{\left(-a-\sqrt{a^{2}-1}\right)}{-2\sqrt{a^{2}-1}}e^{\left(-a+\sqrt{a^{2}-1}\right)t}+\frac{\left(-a+\sqrt{a^{2}-1}\right)}{2\sqrt{a^{2}-1}}e^{\left(-a-\sqrt{a^{2}-1}\right)t}\ ",
+        #r"p\left(x\right)=0.5\operatorname{erf}\left(-3.7\left(x-0.65\right)\right)+0.5",
+        #r"m_{x}\left(P\right)=\left\{\left|P.x\right|-s_{0}>\max\left(\left|P.y\right|-s_{1},\left|P.z\right|-s_{2}\right):0,\left|P.y\right|-s_{1}>\left|P.z\right|-s_{2}:1,2\right\}",
+        #r"t_{1}=-\frac{\left(p-u\right)\times\left(v-u\right)\cdot\left(d\times\left(v-u\right)\right)}{\left|d\times\left(v-u\right)\right|^{2}}"
+        #r"G_{2}\left(P,t\right)=\left(m_{g}\left(t-0,P.x,s_{0}\right),m_{g}\left(t-1,P.y,s_{1}\right),m_{g}\left(t-2,P.z,s_{2}\right)\right)",
     
-        r"abcde+fgh\cdoti",
-        r"A\times B\cdot C",
-        r"\sin2x^{2}",
-        r"\operatorname{arcsinh}^{-1}x",
-        r"\operatorname{arcsinh}^{-1}x",
+        #r"abcde+fgh\cdoti",
+        #r"A\times B\cdot C",
+        #r"\sin2x^{2}",
+        #r"\operatorname{arcsinh}^{-1}x",
+        r"A.x^{2}",
     ]
     
     for defn in test_definitions:
