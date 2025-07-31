@@ -1,6 +1,8 @@
 # Desmos Line Parser
 quick and dirty parser for desmos that takes lines written in desmos as input and returns code in a language of your choice
 
+https://github.com/user-attachments/assets/9a317fc8-07c7-4a99-a5bb-30629236e732
+
 ## example usages:
 ```
 python desmos_to_code.py
